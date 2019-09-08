@@ -10,6 +10,13 @@ This application contains the APIs for translate long URLs in short URLs.
 `python3 -m venv shorter_venv`
 `source shorter_venv/bin/activate`
 
+#### Create DB
+1. docker pull postgres
+2. docker run --name docker-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+3. docker exec -it docker-postgres /bin/bash
+4. su  postgres
+5. psql
+6. create database shorter_db;
 
 #### Now to get the app running:
 

@@ -20,7 +20,7 @@ def generate_shortcode():
 
 
 @api.route("/healthcheck/")
-class HealtCheck(Resource):
+class HealthCheck(Resource):
     def get(self):
         return {"Service": "OK"}
 

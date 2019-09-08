@@ -22,6 +22,7 @@ class DefaultConfig(FixedConfig):
     SERVER_NAME = "localhost:5000"
     ENVIRONMENT_NAME = "development"
     SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/app.db"
+    #SQLALCHEMY_DATABASE_URI = "postgresql://localhost/shorter_dev"
     BASE_URL = ""
 
 
