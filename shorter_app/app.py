@@ -1,7 +1,7 @@
 from flask import Flask
 from shorter_app.apis import api
 from shorter_app.config import DefaultConfig
-from shorter_app.database import db_session, init_db
+from shorter_app.database import init_db
 
 
 def create_app(config=DefaultConfig):
@@ -15,10 +15,10 @@ def create_app(config=DefaultConfig):
         description="Microservice for translate URL in a shorter URL",
     )
 
-    init_db()
+    init_db(app)
 
     @app.teardown_request
     def teardown_request(request):
-        db_session.remove()
+        app.db_session.remove()
 
     return app

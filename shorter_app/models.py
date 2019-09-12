@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from shorter_app.database import Base
 from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
 class Shorter(Base):
     __tablename__ = "shorter"

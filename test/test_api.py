@@ -147,10 +147,15 @@ class TestURLApi:
         stats_commit_mock.assert_called_once_with()
         stats_get_mock.assert_called_once_with("123456")
 
-    def test_get_shorter_item_not_found(self):
+    def test_get_shorter_item_not_found(self, mocker):
         url_api = UrlItem()
+        repository_get_mock = mocker.patch.object(
+            ShorterRepository, "get", return_value=None
+        )
         response, status_code = url_api.get("XXXXXX")
         assert status_code == 404
+        repository_get_mock.assert_called_once_with("XXXXXX")
+
 
 
 class TestStatsApi:

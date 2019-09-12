@@ -21,14 +21,13 @@ class FixedConfig:
 class DefaultConfig(FixedConfig):
     SERVER_NAME = "localhost:5000"
     ENVIRONMENT_NAME = "development"
-    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/app.db"
-    #SQLALCHEMY_DATABASE_URI = "postgresql://localhost/shorter_dev"
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:mysecretpassword@localhost/shorter_dev_db"
     BASE_URL = ""
 
 
 class TestConfig(FixedConfig):
     SERVER_NAME = "localhost:5000"
     ENVIRONMENT_NAME = "local_test"
-    SQLALCHEMY_DATABASE_URI = ""
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:mysecretpassword@localhost/shorter_dev_db"
     USE_LOCAL_MOCK_SERVER = True
     BASE_URL = "shorter"

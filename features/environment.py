@@ -14,7 +14,7 @@ def shorter_client(context, *args, **kwargs):
     app.testing = True
     context.client = app.test_client()
     with app.app_context():
-        init_db()
+        init_db(app)
     yield context.client
     # -- CLEANUP:
     os.close(context.db)

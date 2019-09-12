@@ -1,33 +1,34 @@
-from shorter_app.database import db_session
+from flask import current_app
 from shorter_app.models import Shorter, Stats
 
 
 class BaseRespository:
     @classmethod
     def commit(cls):
-        db_session.commit()
+        current_app.db_session.commit()
 
 
 class ShorterRepository(BaseRespository):
     @classmethod
     def add(cls, shorter):
-        db_session.add(shorter)
-        db_session.commit()
+        current_app.db_session.add(shorter)
+        current_app.db_session.commit()
 
     @classmethod
     def get(cls, code):
-        return Shorter.query.filter(Shorter.code == code).first()
+        return current_app.db_session.query(Shorter) \
+            .filter_by(code=code).first()
 
     @classmethod
     def get_all(cls):
-        return db_session.query(Shorter).all()
+        return current_app.db_session.query(Shorter).all()
 
 
 class StatsRepository(BaseRespository):
     @classmethod
     def add(self, stats):
-        db_session.add(stats)
-        db_session.commit()
+        current_app.db_session.add(stats)
+        current_app.db_session.commit()
 
     @classmethod
     def get(self, code):
@@ -35,4 +36,4 @@ class StatsRepository(BaseRespository):
 
     @classmethod
     def get_all(self):
-        return db_session.query(Stats).all()
+        return current_app.db_session.query(Stats).all()

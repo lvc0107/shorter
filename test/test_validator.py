@@ -42,10 +42,16 @@ class TestvalidateURL:
 
 
 class TestvalidateCode:
-    def test_validate_code(self):
+    def test_validate_code(self, mocker):
+
+        repository_get_mock = mocker.patch.object(
+            ShorterRepository, "get", return_value=None
+        )
         error, status_code = Validator().validate_code("ABCDEF")
         assert not error
         assert not status_code
+        repository_get_mock.assert_called_once_with("ABCDEF")
+
 
     def test_validate_missing_code(self):
         error, status_code = Validator().validate_code("")
