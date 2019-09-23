@@ -52,7 +52,6 @@ class TestvalidateCode:
         assert not status_code
         repository_get_mock.assert_called_once_with("ABCDEF")
 
-
     def test_validate_missing_code(self):
         error, status_code = Validator().validate_code("")
         assert error.get("Error") == ERROR_INVALID_CODE

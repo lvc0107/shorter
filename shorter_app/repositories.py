@@ -16,8 +16,7 @@ class ShorterRepository(BaseRespository):
 
     @classmethod
     def get(cls, code):
-        return current_app.db_session.query(Shorter) \
-            .filter_by(code=code).first()
+        return current_app.db_session.query(Shorter).filter_by(code=code).first()
 
     @classmethod
     def get_all(cls):

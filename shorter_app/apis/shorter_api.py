@@ -26,19 +26,11 @@ class HealthCheck(Resource):
 
 
 request_shorter_url = api.model(
-    "Post Short URL (Request)",
-    {
-        "code": fields.String,
-        "url": fields.String,
-    },
+    "Post Short URL (Request)", {"code": fields.String, "url": fields.String}
 )
 
 response_shorter_url = api.model(
-    "Get Short URL list (Response)",
-    {
-        "code": fields.String,
-        "url": fields.String,
-    },
+    "Get Short URL list (Response)", {"code": fields.String, "url": fields.String}
 )
 
 response_stats = api.model(

@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class Shorter(Base):
     __tablename__ = "shorter"
     id = Column(Integer, primary_key=True)
@@ -14,17 +15,14 @@ class Shorter(Base):
         self.url = url
         self.code = code
 
-    def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
 class Stats(Base):
     __tablename__ = "stats"
     id = Column(Integer, primary_key=True)
     code = Column(String, ForeignKey("shorter.code"), nullable=False)
     usage_count = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=True, dt_format='rfc822')
-    last_usage = Column(DateTime, default=datetime.utcnow, nullable=True, dt_format='rfc822')
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=True)
+    last_usage = Column(DateTime, default=datetime.utcnow, nullable=True)
 
     def __init__(self, code, created_at):
         self.code = code

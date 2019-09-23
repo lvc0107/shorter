@@ -26,9 +26,12 @@ class TestURLApi:
 
     def test_get_shorter_list(self, mocker):
         shorter_get_all_mock = mocker.patch.object(
-            ShorterRepository, "get_all",
-            return_value=[{"url": "url1", "code": "code1"},
-                          {"url": "url2", "code": "code2"}]
+            ShorterRepository,
+            "get_all",
+            return_value=[
+                {"url": "url1", "code": "code1"},
+                {"url": "url2", "code": "code2"},
+            ],
         )
         url_api = Url()
         response, status_code = url_api.get()
@@ -48,23 +51,17 @@ class TestURLApi:
         validate_url_mock.return_value = None, None
         validate_code_mock = mocker.patch.object(Validator, "validate_code")
         validate_code_mock.return_value = None, None
-        #shorter_init_mock = mocker.patch.object(
+        # shorter_init_mock = mocker.patch.object(
         #    Shorter, "__init__", return_value=None
-        #)
+        # )
         # shorter_mock2 = mocker.patch("shorter_app.apis.shorter_api.Shorter")
-        stats_init_mock = mocker.patch.object(
-            Stats, "__init__", return_value=None
-        )
-        shorter_repository_add_mock = mocker.patch.object(
-            ShorterRepository, "add"
-        )
-        stats_repository_add_mock = mocker.patch.object(
-            StatsRepository, "add"
-        )
+        stats_init_mock = mocker.patch.object(Stats, "__init__", return_value=None)
+        shorter_repository_add_mock = mocker.patch.object(ShorterRepository, "add")
+        stats_repository_add_mock = mocker.patch.object(StatsRepository, "add")
         response, status_code = url_api.post()
         assert response.get("code") == "123456"
         assert 201 == status_code
-        #shorter_init_mock.assert_called_once_with(url="http://url.com", code="123456")
+        # shorter_init_mock.assert_called_once_with(url="http://url.com", code="123456")
         # TODO check how to mock this function
         # stats_init_mock.assert_called_once_with(response.get("code"), mocked_get_current_time())
         validate_url_mock.assert_called_once_with("http://url.com")
@@ -157,15 +154,16 @@ class TestURLApi:
         repository_get_mock.assert_called_once_with("XXXXXX")
 
 
-
 class TestStatsApi:
     def test_get_shorter_list(self, mocker):
         stats_get_all_mock = mocker.patch.object(
-            StatsRepository, "get",
-            return_value=MagicMock(created_at="2019-09-03 00:00:00",
-                                   last_usage="2019-10-03 00:00:00",
-                                   usage_count=1)
-
+            StatsRepository,
+            "get",
+            return_value=MagicMock(
+                created_at="2019-09-03 00:00:00",
+                last_usage="2019-10-03 00:00:00",
+                usage_count=1,
+            ),
         )
         mock_api = MagicMock(code="123456")
         stats_api = StatsItem(mock_api)
@@ -173,13 +171,13 @@ class TestStatsApi:
         assert status_code == 200
         assert response.get("created_at") == "2019-09-03 00:00:00"
         assert response.get("last_usage") == "2019-10-03 00:00:00"
-        assert response.get("usage_count") == '1'
+        assert response.get("usage_count") == "1"
         stats_get_all_mock.assert_called_once_with("123456")
 
     def test_get_shorter_list_error(self, mocker):
         stats_get_all_mock = mocker.patch.object(
-            StatsRepository, "get",
-            return_value=None)
+            StatsRepository, "get", return_value=None
+        )
         mock_api = MagicMock(code="123456")
         stats_api = StatsItem(mock_api)
         response, status_code = stats_api.get("123456")

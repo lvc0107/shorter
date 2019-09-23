@@ -22,6 +22,7 @@ class Validator:
             return {"Error": ERROR_URL_IS_REQUIRED}, 400
 
         import validators
+
         if not validators.url(url):
             return {"Error": ERROR_INVALID_URL}, 400
 
