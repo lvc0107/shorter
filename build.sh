@@ -12,7 +12,7 @@ if ! pytest; then
     exit 1
 fi
 
-#python manage.py
+python build_database.py
 
 echo "Running System Tests"
 if ! behave; then

@@ -1,6 +1,6 @@
 alembic==1.0.7
 behave==1.2.6
-black
+#black
 Flask==1.0.2
 flask-restplus==0.12.1
 psycopg2==2.8.3

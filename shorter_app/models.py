@@ -15,6 +15,9 @@ class Shorter(Base):
         self.url = url
         self.code = code
 
+    def __repr__(self):
+        return f"<Shorter(url='{self.url}', code='{self.code}')>"
+
 
 class Stats(Base):
     __tablename__ = "stats"
@@ -29,3 +32,6 @@ class Stats(Base):
         self.created_at = created_at
         self.last_usage = created_at
         self.usage_count = 0
+
+    def __repr__(self):
+        return f"<Stats(code='{self.code}', usage_count='{self.usage_count}', created_at='{self.created_at}', usage_count='{self.usage_count} )>"
