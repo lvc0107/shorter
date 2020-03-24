@@ -1,4 +1,4 @@
-FROM ubuntu:19.04
+FROM python:3.6
 
 LABEL maintainer="lvc0107@protonmail.com"
 
@@ -10,10 +10,11 @@ COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY . /app
 
-ENTRYPOINT [ "python" ]
+ENTRYPOINT [ "sh" ]
 
-CMD [ "server.py" ]
+CMD [ "./server.sh"]
