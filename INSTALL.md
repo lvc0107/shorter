@@ -36,7 +36,7 @@ It is a demo with pourpuse to test some technologies such as
 ### Docker
 
 1. `docker build -t shorter_app:latest .`
-2. `docker run -d  -p 5000:5000 --name shorter_app_container shorter_app`
+2. `docker rm shorter_app_container; docker run -p 5000:5000 --name shorter_app_container shorter_app`
 
 
 ### Some aditional commands

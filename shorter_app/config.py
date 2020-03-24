@@ -14,10 +14,10 @@ class FixedConfig:
 
 
 class DefaultConfig(FixedConfig):
-    SERVER_NAME = "localhost:5000"
+    SERVER_NAME = "0.0.0.0:5000"
     ENVIRONMENT_NAME = "development"
 
 
 class TestConfig(FixedConfig):
-    SERVER_NAME = "localhost:5000"
+    SERVER_NAME = "0.0.0.0:5000"
     ENVIRONMENT_NAME = "local_test"
