@@ -2,6 +2,7 @@ from flask import Flask
 from shorter_app.apis import api
 from shorter_app.config import DefaultConfig
 from shorter_app.database import init_db
+from shorter_app.authorization import init_user
 
 
 def create_app(config=DefaultConfig):
@@ -21,4 +22,5 @@ def create_app(config=DefaultConfig):
     def teardown_request(request):
         app.db_session.remove()
 
+    app.before_request(init_user)
     return app

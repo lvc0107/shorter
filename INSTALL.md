@@ -1,15 +1,4 @@
 
-
-# Shorter URL Application
-This application contains the APIs for translate long URLs in short URLs.
-It is a demo with pourpuse to test some technologies such as
-* OIDC
-* postgres
-* some NO SQL DB
-* Celery + rabbitmq
-* AWS integration
-
-
 ## Getting Started
 #### First make sure you run this code in a virtual environment:
 

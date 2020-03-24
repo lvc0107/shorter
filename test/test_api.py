@@ -1,8 +1,17 @@
 import re
 import datetime
+import pytest
 from unittest.mock import MagicMock
+from werkzeug.exceptions import Unauthorized
+
 from shorter_app.repositories import ShorterRepository, StatsRepository
-from shorter_app.apis.shorter_api import generate_shortcode, Url, UrlItem, StatsItem
+from shorter_app.apis.shorter_api import (
+    HealthCheck,
+    generate_shortcode,
+    Url,
+    UrlItem,
+    StatsItem,
+)
 from shorter_app.validator import Validator
 from shorter_app.models import Shorter, Stats
 from shorter_app.validator import (
@@ -18,13 +27,19 @@ def mocked_get_current_time():
     return datetime.datetime(2020, 1, 1, 1, 1, 1)
 
 
+class TestHealthCheck:
+    def test_get(self):
+        health_check = HealthCheck().get()
+        assert health_check.get("Service") == "OK"
+
+
 class TestURLApi:
     def test_generate_code(self):
         code = generate_shortcode()
         assert len(code) == 6
         assert re.match("^[a-zA-Z0-9_]+$", code)
 
-    def test_get_shorter_list(self, mocker):
+    def test_get_shorter_list(self, mocker, current_app_with_consumer_user):
         shorter_get_all_mock = mocker.patch.object(
             ShorterRepository,
             "get_all",
@@ -43,7 +58,17 @@ class TestURLApi:
         assert response[1].get("url") == "url2"
         shorter_get_all_mock.assert_called_once_with()
 
-    def test_post_shorter_item(self, mocker):
+    def test_get_shorter_list_unauthorized(
+        self, mocker, current_app_with_non_authorizated_user
+    ):
+        shorter_get_all_mock = mocker.patch.object(ShorterRepository, "get_all")
+        with pytest.raises(Unauthorized):
+            url_api = Url()
+            response, status_code = url_api.get()
+            assert status_code == 401
+        shorter_get_all_mock.assert_not_called()
+
+    def test_post_shorter_item(self, mocker, current_app_with_admin_user):
         api_mock = MagicMock()
         api_mock.payload = dict(url="http://url.com", code="123456")
         url_api = Url(api=api_mock)
@@ -54,6 +79,10 @@ class TestURLApi:
         # shorter_init_mock = mocker.patch.object(
         #    Shorter, "__init__", return_value=None
         # )
+        # shorter_repr_mock = mocker.patch.object(
+        #    Shorter, "__repr__", return_value="shorter model"
+        # )
+
         # shorter_mock2 = mocker.patch("shorter_app.apis.shorter_api.Shorter")
         stats_init_mock = mocker.patch.object(Stats, "__init__", return_value=None)
         shorter_repository_add_mock = mocker.patch.object(ShorterRepository, "add")
@@ -71,7 +100,7 @@ class TestURLApi:
         # shorter_repository_add_mock.assert_called_once_with(shorter_mock)
         # stats_repository_add_mock.assert_called_once_with(stats_mock)
 
-    def test_post_invalid_code(self, mocker):
+    def test_post_invalid_code(self, mocker, current_app_with_admin_user):
         api_mock = MagicMock()
         api_mock.payload = dict(url="http://url.com", code="1")
         url_api = Url(api=api_mock)
@@ -86,7 +115,7 @@ class TestURLApi:
         validate_url_mock.assert_called_once_with("http://url.com")
         validate_code_mock.assert_called_once_with("1")
 
-    def test_post_invalid_url(self, mocker):
+    def test_post_invalid_url(self, mocker, current_app_with_admin_user):
         api_mock = MagicMock()
         api_mock.payload = dict(url="XXX", code="123456")
         url_api = Url(api=api_mock)
@@ -97,7 +126,7 @@ class TestURLApi:
         assert 400 == status_code
         validate_url_mock.assert_called_once_with("XXX")
 
-    def test_post_missing_url(self, mocker):
+    def test_post_missing_url(self, mocker, current_app_with_admin_user):
         api_mock = MagicMock()
         api_mock.payload = dict(code="123456")
         url_api = Url(api=api_mock)
@@ -108,7 +137,7 @@ class TestURLApi:
         assert 400 == status_code
         validate_url_mock.assert_called_once_with(None)
 
-    def test_post_duplicated_item(self, mocker):
+    def test_post_duplicated_item(self, mocker, current_app_with_admin_user):
         api_mock = MagicMock()
         api_mock.payload = dict(url="http://url.com", code="123456")
         url_api = Url(api=api_mock)
@@ -122,7 +151,27 @@ class TestURLApi:
         validate_url_mock.assert_called_once_with("http://url.com")
         validate_code_mock.assert_called_once_with("123456")
 
-    def test_get_shorter_item(self, mocker):
+    def test_post_shorter_unauthorized(
+        self, mocker, current_app_with_non_authorizated_user
+    ):
+        validate_url_mock = mocker.patch.object(Validator, "validate_url")
+        validate_code_mock = mocker.patch.object(Validator, "validate_code")
+        shorter_init_mock = mocker.patch.object(Shorter, "__init__", return_value=None)
+        stats_init_mock = mocker.patch.object(Stats, "__init__", return_value=None)
+        shorter_repository_add_mock = mocker.patch.object(ShorterRepository, "add")
+        stats_repository_add_mock = mocker.patch.object(StatsRepository, "add")
+        with pytest.raises(Unauthorized):
+            url_api = Url()
+            response, status_code = url_api.post()
+            assert status_code == 401
+        validate_url_mock.assert_not_called()
+        validate_code_mock.assert_not_called()
+        shorter_init_mock.assert_not_called()
+        stats_init_mock.assert_not_called()
+        shorter_repository_add_mock.assert_not_called()
+        stats_repository_add_mock.assert_not_called()
+
+    def test_get_shorter_item(self, mocker, current_app_with_consumer_user):
         url_api = UrlItem()
 
         query_mock = MagicMock()
@@ -144,18 +193,31 @@ class TestURLApi:
         stats_commit_mock.assert_called_once_with()
         stats_get_mock.assert_called_once_with("123456")
 
-    def test_get_shorter_item_not_found(self, mocker):
+    def test_get_shorter_item_not_found(self, mocker, current_app_with_consumer_user):
         url_api = UrlItem()
-        repository_get_mock = mocker.patch.object(
+        shorter_repository_get_mock = mocker.patch.object(
             ShorterRepository, "get", return_value=None
         )
         response, status_code = url_api.get("XXXXXX")
         assert status_code == 404
-        repository_get_mock.assert_called_once_with("XXXXXX")
+        shorter_repository_get_mock.assert_called_once_with("XXXXXX")
+
+    def test_get_shorter_item_unauthorized(
+        self, mocker, current_app_with_non_authorizated_user
+    ):
+        shorter_get_mock = mocker.patch.object(ShorterRepository, "get")
+        stats_commit_mock = mocker.patch.object(StatsRepository, "commit")
+
+        with pytest.raises(Unauthorized):
+            url_api = UrlItem()
+            response, status_code = url_api.get()
+            assert status_code == 401
+        shorter_get_mock.assert_not_called()
+        stats_commit_mock.assert_not_called()
 
 
 class TestStatsApi:
-    def test_get_shorter_list(self, mocker):
+    def test_get_shorter_list(self, mocker, current_app_with_consumer_user):
         stats_get_all_mock = mocker.patch.object(
             StatsRepository,
             "get",
@@ -174,7 +236,7 @@ class TestStatsApi:
         assert response.get("usage_count") == "1"
         stats_get_all_mock.assert_called_once_with("123456")
 
-    def test_get_shorter_list_error(self, mocker):
+    def test_get_shorter_list_error(self, mocker, current_app_with_consumer_user):
         stats_get_all_mock = mocker.patch.object(
             StatsRepository, "get", return_value=None
         )
@@ -184,3 +246,13 @@ class TestStatsApi:
         assert status_code == 404
         assert response.get("Error") == ERROR_CODE_NOT_FOUND
         stats_get_all_mock.assert_called_once_with("123456")
+
+    def test_get_stats_item_unauthorized(
+        self, mocker, current_app_with_non_authorizated_user
+    ):
+        stats_get_all_mock = mocker.patch.object(StatsRepository, "get")
+        with pytest.raises(Unauthorized):
+            url_api = UrlItem()
+            response, status_code = url_api.get()
+            assert status_code == 401
+        stats_get_all_mock.assert_not_called()

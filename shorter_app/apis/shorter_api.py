@@ -2,17 +2,14 @@ import random
 import string
 from flask import redirect
 from flask_restplus import Namespace, Resource, fields, marshal
+
+from shorter_app.datetime_utils import get_current_time
 from shorter_app.models import Shorter, Stats
 from shorter_app.repositories import ShorterRepository, StatsRepository
 from shorter_app.validator import Validator, ERROR_CODE_NOT_FOUND
-
-from datetime import datetime
+from shorter_app.authorization import authorized_user
 
 api = Namespace("shorter", description="Shorter App")
-
-
-def get_current_time():
-    return datetime.now()
 
 
 def generate_shortcode():
@@ -49,7 +46,7 @@ class Url(Resource):
     # TODO update response_shorter_url
     @api.response(200, "Get Short URL list", response_shorter_url)
     @api.response(401, "Unauthorized")
-    @api.response(400, "Bad Request")
+    @authorized_user(consumer=True)
     def get(self):
         shorter_list = ShorterRepository.get_all()
         return marshal(shorter_list, response_shorter_url), 200
@@ -60,6 +57,7 @@ class Url(Resource):
     @api.response(400, "Bad Request")
     @api.response(409, "Duplicated code")
     @api.response(201, "Short URL Created", response_shorter_url)
+    @authorized_user(admin=True)
     def post(self):
         url = self.api.payload.get("url")
         code = self.api.payload.get("code")
@@ -88,6 +86,7 @@ class UrlItem(Resource):
     @api.response(200, "Get Short URL list", response_shorter_url)
     @api.response(401, "Unauthorized")
     @api.response(404, "Not Found")
+    @authorized_user(consumer=True)
     def get(self, code):
         result = ShorterRepository.get(code)
 
@@ -106,6 +105,7 @@ class StatsItem(Resource):
     @api.response(200, "Get Short URL stasts", response_stats)
     @api.response(401, "Unauthorized")
     @api.response(404, "Not Found")
+    @authorized_user(consumer=True)
     def get(self, code):
         result = StatsRepository.get(code)
         if not result:

@@ -1,12 +1,24 @@
-# Code Challenge
 
-Create a micro service to shorten urls like bit.ly or TinyURL do.
+# Shorter URL Application
+This application contains the APIs for translate long URLs in short URLs.
+It is a demo with porpuse to test some technologies such as
+
+* OIDC
+* postgres
+* SQL
+* some NO SQL DB
+* Celery + rabbitmq
+* AWS integration
+* Qubernete
+
+It produce shorten urls like bit.ly or TinyURL do.
 
 ## Rules
 
 1. The service must expose HTTP endpoints according to the API Docs below.
-2. Use your technology of choice, there's no restrictions. Instructions for the installation must be detailed in the INSTALL.md file.
-3. Write the tests you consider necessary.
+2. Instructions for the installation are detailed in the INSTALL.md file.
+3. GET endpoints allows consumer access. POST endpoints allows admin access.
+
 
 -------------------------------------------------------------------------
 
@@ -103,10 +115,3 @@ Content-Type: "application/json"
 
 * Not Found: If the `shortcode` cannot be found
 
-## Delivery Steps: 
-
-1. Fork this repo to your own Github account.
-2. Implement the functionality, including any instructions to setup and run the application.
-3. Submit a PR to the `master` branch of this repository.
-
-Thank you and good luck!
