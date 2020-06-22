@@ -6,13 +6,16 @@
 1. `python3 -m venv shorter_venv`
 2. `source shorter_venv/bin/activate`
 
-#### Create DB
+#### Create DB (*)
+
 1. `docker pull postgres`
-2. `docker run --name docker-postgres-shorter -e POSTGRES_PASSWORD=mysecretpassword -d postgres`
+2. `docker run --name shorter_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5434:5434 postgres`
 3. `docker exec -it docker-postgres /bin/bash`
 4. `su postgres`
 5. `psql`
-6. create database shorter_db;
+6. `create database shorter_db;`
+
+(*) These steps should be executed once
 
 #### Now to get the app running:
 

@@ -5,15 +5,16 @@ from unittest.mock import MagicMock
 from werkzeug.exceptions import Unauthorized
 
 from shorter_app.repositories import ShorterRepository, StatsRepository
-from shorter_app.apis.shorter_api import (
+from shorter_app.apis.shorter import (
     HealthCheck,
     generate_shortcode,
     Url,
     UrlItem,
     StatsItem,
+    Shorter,
+    Stats,
 )
 from shorter_app.validator import Validator
-from shorter_app.models import Shorter, Stats
 from shorter_app.validator import (
     ERROR_URL_IS_REQUIRED,
     ERROR_DUPLICATED_CODE,
@@ -76,29 +77,29 @@ class TestURLApi:
         validate_url_mock.return_value = None, None
         validate_code_mock = mocker.patch.object(Validator, "validate_code")
         validate_code_mock.return_value = None, None
-        # shorter_init_mock = mocker.patch.object(
-        #    Shorter, "__init__", return_value=None
-        # )
-        # shorter_repr_mock = mocker.patch.object(
-        #    Shorter, "__repr__", return_value="shorter model"
-        # )
-
-        # shorter_mock2 = mocker.patch("shorter_app.apis.shorter_api.Shorter")
+        get_current_time_mock = mocker.patch(
+            "shorter_app.apis.shorter.get_current_time",
+            return_value=mocked_get_current_time,
+        )
+        shorter_init_mock = mocker.patch.object(Shorter, "__init__", return_value=None)
         stats_init_mock = mocker.patch.object(Stats, "__init__", return_value=None)
+
         shorter_repository_add_mock = mocker.patch.object(ShorterRepository, "add")
         stats_repository_add_mock = mocker.patch.object(StatsRepository, "add")
+
         response, status_code = url_api.post()
-        assert response.get("code") == "123456"
+
+        assert response.get("code") == None
         assert 201 == status_code
-        # shorter_init_mock.assert_called_once_with(url="http://url.com", code="123456")
-        # TODO check how to mock this function
-        # stats_init_mock.assert_called_once_with(response.get("code"), mocked_get_current_time())
+        shorter_init_mock.assert_called_once_with(code="123456", url="http://url.com")
+
+        stats_init_mock.assert_called_once_with(
+            "123456", get_current_time_mock.return_value
+        )
         validate_url_mock.assert_called_once_with("http://url.com")
         validate_code_mock.assert_called_once_with("123456")
-
-        # TODO fix this calls
-        # shorter_repository_add_mock.assert_called_once_with(shorter_mock)
-        # stats_repository_add_mock.assert_called_once_with(stats_mock)
+        stats_repository_add_mock.assert_called_once()
+        shorter_repository_add_mock.assert_called_once()
 
     def test_post_invalid_code(self, mocker, current_app_with_admin_user):
         api_mock = MagicMock()

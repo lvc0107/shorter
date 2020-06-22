@@ -13,6 +13,9 @@ It is a demo with porpuse to test some technologies such as
 
 It produce shorten urls like bit.ly or TinyURL do.
 
+## Installation
+For installation read **INSTALL.md**
+
 ## Rules
 
 1. The service must expose HTTP endpoints according to the API Docs below.

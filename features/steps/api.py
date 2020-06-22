@@ -1,6 +1,6 @@
 import json
 from behave import given, when, then
-from shorter_app.apis.shorter_api import generate_shortcode
+from shorter_app.apis.shorter import generate_shortcode
 from shorter_app.validator import (
     ERROR_INVALID_CODE,
     ERROR_DUPLICATED_CODE,
