@@ -71,10 +71,7 @@ class TestURLApi:
 
     @pytest.mark.parametrize(
         "url, given_code, expected_code",
-        [
-            ("http://url.com", "123456", "123456"),
-            ("http://url.com", None, "new_code"),
-        ],
+        [("http://url.com", "123456", "123456"), ("http://url.com", None, "new_code"),],
     )
     def test_post_shorter_item(
         self, mocker, current_app_with_admin_user, url, given_code, expected_code
@@ -100,7 +97,6 @@ class TestURLApi:
             "shorter_app.apis.shorter.generate_shortcode"
         )
         generate_shortcode_mock.return_value = expected_code
-
 
         response, status_code = url_api.post()
 
